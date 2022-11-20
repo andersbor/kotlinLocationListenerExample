@@ -21,20 +21,9 @@ class FirstFragment : Fragment() {
     private var _binding: FragmentFirstBinding? = null
     private val binding get() = _binding!!
 
-    // From https://codelabs.developers.google.com/codelabs/while-in-use-locatio
-    // FusedLocationProviderClient - Main class for receiving location updates.
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
-    // LocationRequest - Requirements for the location updates, i.e., how often you
-// should receive updates, the priority, etc.
     private lateinit var locationRequest: LocationRequest
-
-    // LocationCallback - Called when FusedLocationProviderClient has a new Location.
     private lateinit var locationCallback: LocationCallback
-
-    // Used only for local storage of the last known location. Usually, this would be saved to your
-// database, but because this is a simplified sample without a full database, we only need the
-// last location to create a Notification if the user navigates away from the app.
     private var currentLocation: Location? = null
 
     override fun onCreateView(
@@ -86,7 +75,7 @@ class FirstFragment : Fragment() {
     private fun doIt() {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
-        locationRequest = LocationRequest.Builder(1000).build()
+        locationRequest = LocationRequest.Builder(1).build()
         /* locationRequest = LocationRequest.create().apply {
              // Sets the desired interval for active location updates. This interval is inexact. You
              // may not receive updates at all if no location sources are available, or you may
@@ -113,12 +102,7 @@ class FirstFragment : Fragment() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-
-                // Normally, you want to save a new location to a database. We are simplifying
-                // things a bit and just saving it as a local variable, as we only need it again
-                // if a Notification is created (when the user navigates away from app).
                 currentLocation = locationResult.lastLocation
-
                 val message =
                     "current location\n${currentLocation?.latitude} ${currentLocation?.longitude}"
                 binding.textviewFirst.append(message + "\n")
@@ -135,13 +119,6 @@ class FirstFragment : Fragment() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             binding.textviewFirst.text = "Settings: Allow location"
             return
         }
