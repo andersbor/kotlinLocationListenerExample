@@ -25,6 +25,7 @@ class FirstFragment : Fragment() {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private var currentLocation: Location? = null
+    private var looper: Looper? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -106,6 +107,7 @@ class FirstFragment : Fragment() {
                 val message =
                     "current location\n${currentLocation?.latitude} ${currentLocation?.longitude}"
                 binding.textviewFirst.append(message + "\n")
+                UdpBroadcastHelper().sendUdpBroadcast(message, 7000)
                 Log.d("PAPPLE", message)
             }
         }
@@ -122,11 +124,17 @@ class FirstFragment : Fragment() {
             binding.textviewFirst.text = "Settings: Allow location"
             return
         }
+        looper = Looper.getMainLooper()
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
-            Looper.getMainLooper()
+            looper
         )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //looper?.quit()
     }
 
     override fun onDestroyView() {
